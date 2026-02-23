@@ -1,0 +1,10 @@
+{% autoescape off %}
+Hola, {{ user.username }}:
+
+Para completar el registro de tu cuenta y empezar a usar la plataforma, por favor confirma tu correo haciendo clic en el
+botón de abajo:
+
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+Si no creaste esta cuenta, puedes ignorar este mensaje.
+{% endautoescape %}
