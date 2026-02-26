@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos</title>
 
-    <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -24,20 +23,38 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3 class="fw-bold mb-0">Lista de productos</h3>
 
-                            <div>
-                                <span class="me-2 fw-semibold">👤 {{ request.user.username }}</span>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <a href="{% url 'edit_profile' %}" class="text-decoration-none">
+                                        {% if user.profile.avatar %}
+                                        <img src="{{ user.profile.avatar.url }}" alt="Avatar"
+                                            class="rounded-circle border"
+                                            style="width: 40px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width: 40px; height: 40px;">
+                                            {{ user.username|slice:":1"|upper }}
+                                        </div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="me-3">
+                                    <span class="fw-semibold d-block">👤 {{ user.username }}</span>
+                                    <a href="{% url 'edit_profile' %}"
+                                        class="text-muted small text-decoration-none">Editar perfil</a>
+                                </div>
+
                                 <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
                                     Cerrar sesión
                                 </a>
                             </div>
 
-                            <!-- BOTÓN CREAR -->
                             <a href="{% url 'crear_producto' %}" class="btn btn-primary">
                                 + Crear producto
                             </a>
                         </div>
 
-                        <!-- MENSAJES FLASH -->
                         {% if messages %}
                         {% for message in messages %}
                         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -77,7 +94,6 @@
                                                 Eliminar
                                             </button>
 
-                                            <!-- Modal -->
                                             <div class="modal fade" id="deleteModal{{ p.id }}" tabindex="-1">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
@@ -114,12 +130,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Paginación -->
                         {% if productos.has_other_pages %}
                         <nav class="mt-4">
                             <ul class="pagination justify-content-center">
 
-                                <!-- Botón anterior -->
                                 {% if productos.has_previous %}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ productos.previous_page_number }}">
@@ -132,7 +146,6 @@
                                 </li>
                                 {% endif %}
 
-                                <!-- Números -->
                                 {% for num in productos.paginator.page_range %}
                                 {% if productos.number == num %}
                                 <li class="page-item active">
@@ -145,7 +158,6 @@
                                 {% endif %}
                                 {% endfor %}
 
-                                <!-- Botón siguiente -->
                                 {% if productos.has_next %}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ productos.next_page_number }}">

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="rounded-circle img-thumbnail"
+                                style="width: 120px; height: 120px; object-fit: cover;">
+                            {% endif %}
+                            <h3 class="fw-bold mt-3">Perfil de {{ user.username }}</h3>
+                            <p class="text-muted">{{ user.email }}</p>
+                        </div>
+
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <h5 class="mb-3 text-primary border-bottom pb-2">Datos de cuenta</h5>
+                            {% for field in u_form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                <div class="form-text small">{{ field.help_text|safe }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+
+                            <h5 class="mb-3 text-primary border-bottom pb-2 mt-4">Información personal</h5>
+                            {% for field in p_form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button class="btn btn-primary py-2 fw-bold">Guardar Cambios</button>
+                                <a href="{% url 'lista_productos' %}" class="btn btn-outline-secondary">
+                                    Volver al inicio
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
