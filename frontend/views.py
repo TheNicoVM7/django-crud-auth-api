@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 import requests
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -10,6 +11,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Count
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 
 
 API_URL = 'http://127.0.0.1:8000/api/productos/'
@@ -157,3 +160,41 @@ def admin_dashboard(request):
         'datos_grafica': datos_grafica,
     }
     return render(request, 'frontend/admin_dashboard.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def exportar_pdf(request):
+    # Configuramos la respuesta como un PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_admin.pdf"'
+
+    # Creamos el lienzo (canvas)
+    p = canvas.Canvas(response, pagesize=letter)
+    p.setTitle("Reporte de Gestión")
+
+    # --- Diseño del PDF ---
+    p.setFont("Helvetica-Bold", 18)
+    p.drawString(100, 750, "REPORTE DE GESTIÓN - PANEL DE CONTROL")
+    
+    p.setFont("Helvetica", 12)
+    p.drawString(100, 730, f"Generado el: {timezone.now().strftime('%d/%m/%Y %H:%M')}")
+    p.line(100, 720, 500, 720) # Línea divisoria
+
+    # Datos
+    total_p = Producto.objects.count()
+    total_u = User.objects.count()
+    
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(100, 680, "Resumen General:")
+    
+    p.setFont("Helvetica", 12)
+    p.drawString(120, 650, f"• Total de productos en stock: {total_p}")
+    p.drawString(120, 630, f"• Total de usuarios registrados: {total_u}")
+
+    # Pie de página
+    p.setFont("Helvetica-Oblique", 9)
+    p.drawString(100, 50, "Este documento es un reporte automático generado por el sistema de administración.")
+
+    # Cerramos el PDF
+    p.showPage()
+    p.save()
+    return response
