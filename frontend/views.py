@@ -198,3 +198,14 @@ def exportar_pdf(request):
     p.showPage()
     p.save()
     return response
+
+@user_passes_test(lambda u: u.is_staff)
+def gestion_usuarios(request):
+    usuarios_list = User.objects.all().order_by('-date_joined')
+    
+    # Paginación (10 usuarios por página)
+    paginator = Paginator(usuarios_list, 10)
+    page_number = request.GET.get('page')
+    usuarios = paginator.get_page(page_number)
+    
+    return render(request, 'frontend/gestion_usuarios.html', {'usuarios': usuarios})
