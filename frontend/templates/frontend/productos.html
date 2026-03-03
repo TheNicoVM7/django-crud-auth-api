@@ -50,9 +50,17 @@
                                 </a>
                             </div>
 
-                            <a href="{% url 'crear_producto' %}" class="btn btn-primary">
-                                + Crear producto
-                            </a>
+                            <div class="d-flex gap-2">
+                                {% if request.user.is_staff %}
+                                <a href="{% url 'ver_logs' %}" class="btn btn-dark">
+                                    📋 Ver Logs
+                                </a>
+                                {% endif %}
+
+                                <a href="{% url 'crear_producto' %}" class="btn btn-primary">
+                                    + Crear producto
+                                </a>
+                            </div>
                         </div>
 
                         {% if messages %}
