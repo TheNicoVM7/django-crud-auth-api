@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <h2 class="fw-bold mb-4">Panel de Control Personalizado</h2>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm bg-primary text-white p-3">
+                    <h5>Productos Totales</h5>
+                    <h2 class="fw-bold">{{ total_productos }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm bg-success text-white p-3">
+                    <h5>Usuarios Registrados</h5>
+                    <h2 class="fw-bold">{{ total_usuarios }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4">Actividad de Creación (Últimos 7 días)</h5>
+                    <div style="height: 300px;">
+                        <canvas id="registroChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3">Gestión del Sistema</h4>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <a href="{% url 'ver_logs' %}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow p-4 text-center">
+                        <div class="display-5 mb-2">📋</div>
+                        <h5 class="fw-bold text-dark">Historial de Logs</h5>
+                        <p class="text-muted small">Audita quién creó, editó o eliminó productos.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="{% url 'lista_productos' %}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow p-4 text-center">
+                        <div class="display-5 mb-2">📦</div>
+                        <h5 class="fw-bold text-dark">Gestión de Productos</h5>
+                        <p class="text-muted small">Listado completo, edición y creación de stock.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center text-muted opacity-75">
+                    <div class="display-5 mb-2">👥</div>
+                    <h5 class="fw-bold">Gestión de Usuarios</h5>
+                    <p class="small">Próximamente: Editar perfiles y permisos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('registroChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ labels_grafica| safe }},
+            datasets: [{
+                label: 'Productos Creados',
+                data: {{ datos_grafica| safe }},
+            backgroundColor: 'rgba(13, 110, 253, 0.7)',
+            borderColor: '#0d6efd',
+            borderWidth: 1,
+            borderRadius: 5
+                }]
+            },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+        });
+    </script>
+</body>
+
+</html>

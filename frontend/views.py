@@ -3,9 +3,14 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from core.models import UserActionLog
+from core.models import Producto, UserActionLog
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Count
+
 
 API_URL = 'http://127.0.0.1:8000/api/productos/'
 
@@ -123,3 +128,32 @@ def ver_logs(request):
         'query': query,
         'accion_filtro': accion_filtro
     })
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_dashboard(request):
+    total_productos = Producto.objects.count()
+    total_usuarios = User.objects.count()
+    
+    # Lógica para la gráfica: Productos creados en los últimos 7 días
+    hoy = timezone.now().date()
+    fechas = [(hoy - timedelta(days=i)) for i in range(6, -1, -1)]
+    
+    # Contamos los logs de tipo 'CREATE' por cada día
+    datos_grafica = []
+    labels_grafica = []
+    
+    for fecha in fechas:
+        conteo = UserActionLog.objects.filter(
+            accion='CREATE', 
+            fecha__date=fecha
+        ).count()
+        datos_grafica.append(conteo)
+        labels_grafica.append(fecha.strftime('%d/%m'))
+
+    context = {
+        'total_productos': total_productos,
+        'total_usuarios': total_usuarios,
+        'labels_grafica': labels_grafica,
+        'datos_grafica': datos_grafica,
+    }
+    return render(request, 'frontend/admin_dashboard.html', context)
